@@ -1,0 +1,108 @@
+version: '3.8'
+services:
+  userdb:
+    container_name: db
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: nodirbek
+      PGDATA: /data/postgres
+      POSTGRES_DB: userdb
+    volumes:
+      - db:/data/postgres
+    ports:
+      - "5430:5430"
+    networks:
+      - db
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d postgres" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+
+  user_service:
+    container_name: user_service
+    build: ./user_service
+    depends_on: 
+      - "userdb"
+    ports:
+      - "8000:8000"
+    networks:
+      - db
+      
+      
+  migrate:
+    image: migrate/migrate
+    networks:
+      - db
+    volumes:
+      - ./migrations:/migrations
+    command: ["-path", "/migrations", "-database",  "postgres://postgres:nodirbek@db:5432/exam?sslmode=disable", "up"]
+    depends_on:
+      - db
+
+
+  post_service:
+    container_name: post_service
+    build: ./post_service
+    depends_on: 
+      - "userdb"
+    ports:
+      - "5000:5000"
+    networks:
+      - db
+  
+  comment_service:
+    container_name: comment_service
+    build: ./comment-service
+    depends_on:
+      - "userdb"
+    ports:
+      - "6000:6000"
+    networks:
+      - db
+
+  api-gateway:
+    build: ./api-gateway
+    depends_on:
+      - post_service
+      - user_service
+      - userdb
+#      - migrate
+    ports:
+      - "5555:5555"
+    restart: unless-stopped
+    networks:
+      - db
+
+#
+#  migrate:
+#    image: migrate/migrate
+#    networks:
+#      - db
+#    volumes:
+#      - ./migrations:/migrations
+#    command: [ "-path", "/migrations", "-database",  "postgres://postgres:123@db:5432/userdb?sslmode=disable", "up","1"]
+#    links:
+#      - userdb
+#    depends_on:
+#      - "userdb"
+
+  redis:
+    container_name: redis
+    image: redis
+    ports:
+      - "6279:6279"
+    networks:
+      - db
+
+networks:
+  db:
+    driver: bridge
+
+volumes:
+  db:
+
+

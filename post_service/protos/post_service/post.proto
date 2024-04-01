@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+option go_package = ".";
+
+import "google/protobuf/empty.proto";
+
+service PostService {
+  rpc CreatePost(Post) returns (Post);
+  rpc UpdatePost(Post) returns (Post);
+  rpc GetPost(PostID) returns (Post);
+  rpc GetAllPosts(PostsRequest) returns (UserWithPosts);
+  rpc DeletePost(PostID) returns (google.protobuf.Empty);
+  rpc GetUserPostsByUserId (UserId) returns (UserWithPosts);
+}
+
+message UserId {
+  string user_id = 1;
+}
+
+message UserWithPosts {
+  repeated Post posts = 2;
+}
+
+message Post {
+  string id = 1;
+  string user_id = 2;
+  string content = 3;
+  string image_url = 4;
+  string title = 5;
+  int64 likes = 6;
+  int64 dislikes = 7;
+  int64 views = 8;
+  string created_at = 9;
+  string updated_at = 10;
+  string deleted_at = 11;
+}
+
+message PostID {
+  string id = 1;
+}
+
+message PostsRequest {
+  int64 page = 1;
+  int64 limit = 2;
+  string post_id = 3;
+}
+
+message PostsResponse {
+  repeated Post posts = 1;
+  int64 count = 2;
+}
+
+message Posts {
+  repeated Post posts = 1;
+}

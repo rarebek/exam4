@@ -1,0 +1,8 @@
+{
+  "content" : "test content",
+  "image_url" : "test image",
+  "title" : "title",
+  "likes" : 10,
+  "dislikes" : 5,
+  "views" : 1
+}

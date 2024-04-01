@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+option go_package = ".";
+
+service CommentService {
+  rpc CreateComment(Comment) returns (Comment);
+  rpc UpdateComment(Comment) returns (Comment);
+  rpc GetComment(CommentId) returns (Comment);
+  rpc GetAllComments(CommentsRequest) returns (CommentsResponse);
+  rpc DeleteComment(CommentId) returns (Comment);
+}
+
+message Comment {
+  string id = 1;
+  string user_id = 2;
+  string post_id = 3;
+  string content = 4;
+  string created_at = 5;
+  string updated_at = 6;
+  string deleted_at = 7;
+}
+
+message CommentId {
+  string id = 1;
+}
+
+message CommentsRequest {
+  int64 page = 1;
+  int64 limit = 2;
+  string user_id = 3;
+}
+
+message CommentsResponse {
+  repeated Comment comments = 1;
+  int64 count = 2;
+}

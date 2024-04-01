@@ -1,0 +1,778 @@
+definitions:
+  models.Comment:
+    properties:
+      content:
+        type: string
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: string
+      post_id:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
+  models.CommentsResponse:
+    properties:
+      comments:
+        items:
+          $ref: '#/definitions/models.Comment'
+        type: array
+      count:
+        type: integer
+    type: object
+  models.Commentt:
+    properties:
+      content:
+        type: string
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: string
+      post_id:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
+  models.GetAllResponse:
+    properties:
+      users:
+        items:
+          $ref: '#/definitions/models.GetUserResponse'
+        type: array
+    type: object
+  models.GetUserResponse:
+    properties:
+      bio:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: string
+      last_name:
+        type: string
+      password:
+        type: string
+      posts:
+        items:
+          $ref: '#/definitions/models.Postt'
+        type: array
+      refresh_token:
+        type: string
+      username:
+        type: string
+      website:
+        type: string
+    type: object
+  models.LoginResponse:
+    properties:
+      access_token:
+        type: string
+      message:
+        type: string
+    type: object
+  models.Post:
+    properties:
+      comments:
+        items:
+          $ref: '#/definitions/models.Commentt'
+        type: array
+      content:
+        type: string
+      dislikes:
+        type: integer
+      id:
+        type: string
+      image_url:
+        type: string
+      likes:
+        type: integer
+      title:
+        type: string
+      user_id:
+        type: string
+      views:
+        type: integer
+    type: object
+  models.PostSwag:
+    properties:
+      content:
+        type: string
+      dislikes:
+        type: integer
+      id:
+        type: string
+      image_url:
+        type: string
+      likes:
+        type: integer
+      title:
+        type: string
+      user_id:
+        type: string
+      views:
+        type: integer
+    type: object
+  models.Postt:
+    properties:
+      comments:
+        items:
+          $ref: '#/definitions/models.Commentt'
+        type: array
+      content:
+        type: string
+      dislikes:
+        type: integer
+      id:
+        type: string
+      image_url:
+        type: string
+      likes:
+        type: integer
+      title:
+        type: string
+      user_id:
+        type: string
+      views:
+        type: integer
+    type: object
+  models.RegisterUserResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  models.ResponseError:
+    properties:
+      code:
+        type: integer
+      error: {}
+    type: object
+  models.User:
+    properties:
+      bio:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: string
+      last_name:
+        type: string
+      password:
+        type: string
+      refresh_token:
+        type: string
+      username:
+        type: string
+      website:
+        type: string
+    type: object
+  models.UserWithPosts:
+    properties:
+      posts:
+        items:
+          $ref: '#/definitions/models.Post'
+        type: array
+    type: object
+info:
+  contact: {}
+paths:
+  /v1/admin/user/create:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new user account
+      parameters:
+      - description: User information
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Created user
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Invalid user data
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+      summary: Create a new user
+      tags:
+      - users
+  /v1/comment/create:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new comment
+      parameters:
+      - description: Comment information
+        in: body
+        name: comment
+        required: true
+        schema:
+          $ref: '#/definitions/models.Comment'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Created comment
+          schema:
+            $ref: '#/definitions/models.Comment'
+        "400":
+          description: Invalid comment data
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+      summary: Create a new comment
+      tags:
+      - comments
+  /v1/comment/delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a comment from the system
+      parameters:
+      - description: Comment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Comment deleted successfully
+        "400":
+          description: Invalid comment ID
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+        "404":
+          description: Comment not found
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+      summary: Delete a comment
+      tags:
+      - comments
+  /v1/comment/get/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves details of a specific comment
+      parameters:
+      - description: Comment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Retrieved comment information
+          schema:
+            $ref: '#/definitions/models.Comment'
+        "400":
+          description: Invalid comment ID
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+        "404":
+          description: Comment not found
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+      summary: Get comment information
+      tags:
+      - comments
+  /v1/comment/update/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Updates information of a specific comment
+      parameters:
+      - description: Comment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated comment information
+        in: body
+        name: comment
+        required: true
+        schema:
+          $ref: '#/definitions/models.Comment'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Updated comment information
+          schema:
+            $ref: '#/definitions/models.Comment'
+        "400":
+          description: Invalid comment data
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+        "404":
+          description: Comment not found
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+      summary: Update comment information
+      tags:
+      - comments
+  /v1/comments/{post_id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves details of all comments
+      parameters:
+      - description: Post ID
+        in: query
+        name: post_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of comments
+          schema:
+            $ref: '#/definitions/models.CommentsResponse'
+        "400":
+          description: Invalid request parameters
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+      summary: Get all comments
+      tags:
+      - comments
+  /v1/post/create:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new post
+      parameters:
+      - description: Post information
+        in: body
+        name: post
+        required: true
+        schema:
+          $ref: '#/definitions/models.PostSwag'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Created post
+          schema:
+            $ref: '#/definitions/models.Post'
+        "400":
+          description: Invalid post data
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+      summary: Create a new post
+      tags:
+      - posts
+  /v1/post/delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a post from the system
+      parameters:
+      - description: Post ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Post deleted successfully
+        "400":
+          description: Invalid post ID
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+        "404":
+          description: Post not found
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+      summary: Delete a post
+      tags:
+      - posts
+  /v1/post/get/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves details of a specific post
+      parameters:
+      - description: Post ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Retrieved post information
+          schema:
+            $ref: '#/definitions/models.Post'
+        "400":
+          description: Invalid post ID
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+        "404":
+          description: Post not found
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+      summary: Get post information
+      tags:
+      - posts
+  /v1/post/update/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Updates information of a specific post
+      parameters:
+      - description: Post ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated post information
+        in: body
+        name: post
+        required: true
+        schema:
+          $ref: '#/definitions/models.PostSwag'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Updated post information
+          schema:
+            $ref: '#/definitions/models.Post'
+        "400":
+          description: Invalid post data
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+        "404":
+          description: Post not found
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+      summary: Update post information
+      tags:
+      - posts
+  /v1/posts/{page}/{limit}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves details of all posts
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Number of items per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of posts
+          schema:
+            $ref: '#/definitions/models.UserWithPosts'
+        "400":
+          description: Invalid request parameters
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+      summary: Get all posts
+      tags:
+      - posts
+  /v1/user/delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a user from the system
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: User deleted successfully
+        "400":
+          description: Invalid user ID
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+      summary: Delete a user
+      tags:
+      - users
+  /v1/user/get/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves details of a specific user
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Retrieved user information
+          schema:
+            $ref: '#/definitions/models.GetUserResponse'
+        "400":
+          description: Invalid user ID
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+      summary: Get user information
+      tags:
+      - users
+  /v1/user/login/{email}/{password}:
+    post:
+      consumes:
+      - application/json
+      description: Api for Logging in
+      parameters:
+      - description: Email
+        in: path
+        name: email
+        required: true
+        type: string
+      - description: Password
+        in: path
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.LoginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+      summary: Log In User
+      tags:
+      - users
+  /v1/user/register:
+    post:
+      consumes:
+      - application/json
+      description: Registers a new user account
+      parameters:
+      - description: User information
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.RegisterUserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+      summary: Register a User
+      tags:
+      - users
+  /v1/user/update/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Updates information of a specific user
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated user information
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Updated user information
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Invalid user data
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+      summary: Update user information
+      tags:
+      - users
+  /v1/user/verify/{email}/{code}:
+    post:
+      consumes:
+      - application/json
+      description: Verify a user with code sent to their email
+      parameters:
+      - description: email
+        in: path
+        name: email
+        required: true
+        type: string
+      - description: code
+        in: path
+        name: code
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+      summary: verify user
+      tags:
+      - users
+  /v1/users/{page}/{limit}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves details of all users
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Number of items per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of users
+          schema:
+            $ref: '#/definitions/models.GetAllResponse'
+        "400":
+          description: Invalid request parameters
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+      summary: Get all users
+      tags:
+      - users
+swagger: "2.0"

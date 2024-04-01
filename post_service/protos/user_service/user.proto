@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+package user;
+
+option go_package = ".";
+
+
+message User {
+  string id = 1;
+  string username = 2;
+  string email = 3;
+  string password = 4;
+  int64 age = 5;
+  
+}
+
+message Comment {
+  string id = 1;
+  string content = 2;
+  string post_id = 3;
+  string owner_id = 4;
+  string created_at = 5;
+  string updated_at = 6;
+  string deleted_at = 7;
+  User owner = 8;
+}
+
+message Post {
+  string id = 1;
+  string title = 2;
+  string image_url = 3;
+  string owner_id = 4;
+  repeated Comment comments = 5;
+}
+
+message UserWithPostsAndComments {
+  string id = 1;
+  string username = 2;
+  string email = 3;
+  string password = 4;
+  int64 age = 5;
+  repeated Post posts = 6;
+}
+
+message AllUsers {
+  repeated UserWithPostsAndComments users = 1;
+}
+
+message GetUserId {
+  string user_id = 1;
+}
+
+message GetAllUsersRequest {
+  
+}
+
+
+service UserService {
+  rpc Create(User) returns (User);
+  rpc GetUserById(GetUserId) returns (UserWithPostsAndComments);
+  rpc UpdateUser(User) returns (User);
+  rpc DeleteUser(GetUserId) returns (User);
+  rpc GetAllUsers(GetAllUsersRequest) returns (AllUsers);
+}

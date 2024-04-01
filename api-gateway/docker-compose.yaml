@@ -1,0 +1,145 @@
+version: '3.8'
+
+services:
+  userdb:
+    container_name: db
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: nodirbek
+      PGDATA: /dataa/postgres
+      POSTGRES_DB: exam
+    volumes:
+      - db:/data/postgres
+    ports:
+      - "5430:5430"
+    networks:
+      - db
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d postgres" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  mongodb:
+    container_name: mongodb
+    image: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    ports:
+      - "27007:27007"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - db
+    restart: unless-stopped
+
+  user_service:
+    container_name: user_service
+    build: ../user_service
+    depends_on:
+      - "userdb"
+    ports:
+      - "8000:8000"
+    networks:
+      - db
+
+  migrate:
+    image: migrate/migrate
+    networks:
+      - db
+    volumes:
+      - ./migrations:/migrations
+    command: ["-path", "/migrations", "-database",  "postgres://postgres:nodirbek@db:5432/exam?sslmode=disable", "up"]
+    depends_on:
+      - userdb
+
+  post_service:
+    container_name: post_service
+    build: ../post_service
+    depends_on:
+      - "userdb"
+    ports:
+      - "5000:5000"
+    networks:
+      - db
+
+  comment_service:
+    container_name: comment_service
+    build: ../comment-service
+    depends_on:
+      - "userdb"
+    ports:
+      - "6000:6000"
+    networks:
+      - db
+
+  api-gateway:
+    build: .
+    depends_on:
+      - post_service
+      - user_service
+      - userdb
+    ports:
+      - "5555:5555"
+    restart: unless-stopped
+    networks:
+      - db
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - db
+    depends_on:
+      - prometheus
+
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus
+    volumes:
+      - ./prometheus:/etc/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - db
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      
+  cassandra:
+    container_name: cassandra
+    image: cassandra
+    ports:
+      - "9041:9041"
+    networks:
+      - db
+    restart: unless-stopped
+
+  redis:
+    container_name: redis
+    image: redis
+    ports:
+      - "6370:6370"
+    networks:
+      - db
+
+  nats:
+    container_name: nats
+    image: nats
+    ports:
+      - "4222:4222"
+    networks:
+      - db
+
+networks:
+  db:
+    driver: bridge
+
+volumes:
+  db:
+  mongodb_data:
+  prometheus:
